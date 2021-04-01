@@ -1,23 +1,29 @@
 package view;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.ArrayList;
+
 /*import java.util.ArrayList;
 import javafx.stage.FileChooser;
 import java.io.File;*/
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-//import javafx.event.EventHandler;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-//import javafx.scene.control.ListView;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
-//import javafx.scene.control.TextField;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class PhotosController {
@@ -31,13 +37,41 @@ public class PhotosController {
 
 	//private ObservableList<String> obsList; 
 	private ObservableList<CustomImage> imgList;
+	public class Tag{
+		private String tag_ID;
+		private String tag;
+		Tag(String tagID, String tag){
+			this.tag_ID = tagID;
+			this.tag = tag;
+		}
+
+	    public void setTagID(String ID) {
+	        tag_ID = ID;
+	    }
+
+	    public String getTagID() {
+	        return tag_ID;
+	    }
+	    
+	    public void setTag(String tag) {
+	        this.tag = tag;
+	    }
+
+	    public String getTag() {
+	        return tag;
+	    }
+	}
+	
+	
 	public class CustomImage {
 
 	    private ImageView image;
 	    private Text caption;
+	    private ArrayList<Tag> tag_list;
 	    CustomImage(ImageView img, Text caption) {
 	        this.image = img;
 	        this.caption = caption;
+	        this.tag_list = new ArrayList<Tag>();
 	    }
 
 	    public void setImage(ImageView value) {
@@ -92,7 +126,7 @@ public class PhotosController {
 		tableView.getSelectionModel().select(0);
 
 		//THIS will open the filechooser so the user can select a photo, need to implement this on a different stage tho.
-		/*FileChooser fileChooser = new FileChooser();
+		FileChooser fileChooser = new FileChooser();
 		add_new_photo.setOnAction(
 	            (EventHandler<ActionEvent>) new EventHandler<ActionEvent>() {
 	                @Override
@@ -100,10 +134,25 @@ public class PhotosController {
 	                    File file = fileChooser.showOpenDialog(mainStage);
 	                    if (file != null) {
 	                        System.out.println("HELLO");
+	                        
+	                        Image new_image;
+							try {
+								new_image = new Image((file.toURI()).toURL().toString());
+							    ImageView temp = new ImageView(new_image);
+			                    temp.setFitHeight(50);
+			            	    temp.setFitWidth(50);
+			            	    CustomImage new_custom_image = new CustomImage(temp, null);
+			            	    imgList.add(new_custom_image);
+							} catch (MalformedURLException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							
+	                        
 	                    }
 	                }
 	            });
-		 */
+		 
 	}
 	public void change_caption(ActionEvent e) {
 	
@@ -133,6 +182,21 @@ public class PhotosController {
         //tableView.setItems(imgList);
 		
 		
+	}
+	
+	public void delete_photo(ActionEvent e) {
+		ObservableList<CustomImage> temp = FXCollections.observableArrayList(imgList);
+		FXCollections.copy(temp, imgList);
+		int index = tableView.getSelectionModel().getSelectedIndex();
+		if(index < 0 || index > imgList.size()) {
+			return;
+		}
+		//CustomImage selected = imgList.get(index);
+		temp.remove(index);
+		imgList.removeAll(imgList);
+		for(int i = 0; i < temp.size(); i++) {
+				imgList.add(temp.get(i));
+		}
 	}
 	
 	

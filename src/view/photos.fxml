@@ -35,7 +35,7 @@
       
        <!-- display/delete buttons -->
       <Button fx:id = "display_photo" layoutX="15.0" layoutY="335.0" mnemonicParsing="false" text="Display the Photo" />
-      <Button fx:id = "delete_photo" layoutX="150.0" layoutY="335.0" mnemonicParsing="false" text="Delete this Photo"/>
+      <Button fx:id = "delete_photo" layoutX="150.0" layoutY="335.0" mnemonicParsing="false" text="Delete this Photo" onAction="#delete_photo"/>
       
       
        <!-- caption stuff -->
