@@ -1,30 +1,35 @@
 package view;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.util.ArrayList;
-
-/*import java.util.ArrayList;
 import javafx.stage.FileChooser;
-import java.io.File;*/
+import javafx.stage.Modality;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
+//import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
-import javafx.scene.control.TextField;
+//import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class PhotosController {
 
@@ -126,7 +131,7 @@ public class PhotosController {
 		tableView.getSelectionModel().select(0);
 
 		//THIS will open the filechooser so the user can select a photo, need to implement this on a different stage tho.
-		FileChooser fileChooser = new FileChooser();
+		/*FileChooser fileChooser = new FileChooser();
 		add_new_photo.setOnAction(
 	            (EventHandler<ActionEvent>) new EventHandler<ActionEvent>() {
 	                @Override
@@ -151,8 +156,7 @@ public class PhotosController {
 	                        
 	                    }
 	                }
-	            });
-		 
+	            });*/
 	}
 	public void change_caption(ActionEvent e) {
 	
@@ -183,7 +187,6 @@ public class PhotosController {
 		
 		
 	}
-	
 	public void delete_photo(ActionEvent e) {
 		ObservableList<CustomImage> temp = FXCollections.observableArrayList(imgList);
 		FXCollections.copy(temp, imgList);
@@ -197,6 +200,24 @@ public class PhotosController {
 		for(int i = 0; i < temp.size(); i++) {
 				imgList.add(temp.get(i));
 		}
+	}
+	
+	public void add_test(ActionEvent event) {
+		 try {
+		        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/addPhoto.fxml"));
+		        Parent root1 = (Parent) fxmlLoader.load();
+		        Stage stage = new Stage();
+		        stage.setScene(new Scene(root1, 800, 550));
+				stage.initModality(Modality.WINDOW_MODAL);
+				stage.initOwner(((Node)(event.getSource())).getScene().getWindow());
+				stage.show();
+		    } catch(Exception e) {
+		        e.printStackTrace();
+		    }
+
+		
+		
+		
 	}
 	
 	

@@ -17,7 +17,7 @@
                 <Font size="20.0" />
             </font>
       </Text>
-      <Button fx:id = "add_new_photo" layoutX="560.0" layoutY="15.0" mnemonicParsing="false" text="Add a New Photo" />
+      <Button fx:id = "add_new_photo" layoutX="560.0" layoutY="15.0" mnemonicParsing="false" text="Add a New Photo" onAction = "#add_test" />
       <Button fx:id = "view_slideshow" layoutX="685.0" layoutY="15.0" mnemonicParsing="false" text="View Slideshow"/>
    	  
    	  
@@ -35,7 +35,7 @@
       
        <!-- display/delete buttons -->
       <Button fx:id = "display_photo" layoutX="15.0" layoutY="335.0" mnemonicParsing="false" text="Display the Photo" />
-      <Button fx:id = "delete_photo" layoutX="150.0" layoutY="335.0" mnemonicParsing="false" text="Delete this Photo" onAction="#delete_photo"/>
+      <Button fx:id = "delete_photo" layoutX="150.0" layoutY="335.0" mnemonicParsing="false" text="Delete this Photo" onAction = "#delete_photo"/>
       
       
        <!-- caption stuff -->
