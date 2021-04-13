@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ComboBox?>
+
+<AnchorPane id="add_song_title" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="626.0" prefWidth="602.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.DisplayPhotoController">
+   <children>
+   	  <!-- Top row of stuff: Album name/add new photo button/view slideshow button -->
+	  <Text fx:id = "title" text="Photo.jpg" layoutX = "345.0" layoutY = "25.0" style="-fx-font-weight: bold"> 
+   	  		<font>
+                <Font size="24.0" />
+            </font>
+      </Text>
+   	  <Text fx:id = "photo_preview_text" text="Photo Taken: "  layoutX = "345.0" layoutY = "45.0" />
+   	  
+   	  <Button fx:id = "back" text = "Go Back" layoutX = "725.0" layoutY = "15.0" onAction = "#back" />
+  	 
+   	 
+      
+      <ImageView fx:id = "photo" layoutX = "15.0" layoutY = "60.0" fitHeight="300.0" preserveRatio = "true" />
+      
+      
+      
+       <!-- caption stuff -->
+  	  <Text fx:id = "photo_caption" text="Caption:"  layoutX = "15.0" layoutY = "380.0" style="-fx-font-weight: bold"/>
+  	  <TextArea fx:id="caption_text" layoutX="15.0" layoutY="390.0" wrapText="true" prefHeight="145.0" prefWidth="350.0"/>
+  	  <Text fx:id = "photo_tags" text="Tags:"  layoutX = "435.0" layoutY = "380.0" style="-fx-font-weight: bold"/>
+  	  <TextArea fx:id="photos_tags_text" layoutX="435.0" layoutY="390.0" wrapText="true" prefHeight="145.0" prefWidth="350.0" editable = "false"/>
+     
+      
+   </children>
+	
+
+	
+</AnchorPane>
