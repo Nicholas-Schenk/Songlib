@@ -2,7 +2,7 @@ package app;
 
 import java.util.ArrayList;
 
-public class User {
+public class User implements java.io.Serializable{
 	String username;
 	ArrayList<String> albumList;
 	ArrayList<Album> albumData;

@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.ComboBox?>
 
-<AnchorPane id="add_song_title" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="626.0" prefWidth="602.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.PhotosController">
+<AnchorPane id="add_song_title" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="626.0" prefWidth="602.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.PhotosController">
    <children>
    	  <!-- Top row of stuff: Album name/add new photo button/view slideshow button -->
-	  <Text fx:id = "Album_name" text="Album_name" layoutX = "15.0" layoutY = "35.0" style="-fx-font-weight: bold"> 
+	  <Text fx:id="Album_name" layoutX="15.0" layoutY="35.0" style="-fx-font-weight: bold" text="Album_name"> 
    	  		<font>
                 <Font size="20.0" />
             </font>
       </Text>
-      <Button fx:id = "add_new_photo" layoutX="560.0" layoutY="15.0" mnemonicParsing="false" text="Add a New Photo" onAction = "#add_test"/>
-      <Button fx:id = "view_slideshow" layoutX="685.0" layoutY="15.0" mnemonicParsing="false" text="View Slideshow" onAction = "#slideshow"/>
+      <Button fx:id="add_new_photo" layoutX="560.0" layoutY="15.0" mnemonicParsing="false" onAction="#add_test" text="Add a New Photo" />
+      <Button fx:id="view_slideshow" layoutX="685.0" layoutY="15.0" mnemonicParsing="false" onAction="#slideshow" text="View Slideshow" />
    	  
    	  
    	  <!-- Main table of images + their captions -->
@@ -26,7 +26,7 @@
       
   	  
   	  <!-- Text displaying selected photo name -->
-  	  <Text fx:id = "selected_photo" text="Selected Photo: example.jpg"  layoutX = "15.0" layoutY = "325.0" style="-fx-font-weight: bold">
+  	  <Text fx:id="selected_photo" layoutX="15.0" layoutY="325.0" style="-fx-font-weight: bold" text="Selected Photo: example.jpg">
   	  		<font>
                 <Font size="16.0" />
             </font>
@@ -34,37 +34,38 @@
       
       
        <!-- display/delete buttons -->
-      <Button fx:id = "display_photo" layoutX="15.0" layoutY="335.0" mnemonicParsing="false" text="Display the Photo" onAction = "#display_photo" />
-      <Button fx:id = "delete_photo" layoutX="150.0" layoutY="335.0" mnemonicParsing="false" text="Delete this Photo" onAction = "#delete_photo"/>
+      <Button fx:id="display_photo" layoutX="15.0" layoutY="335.0" mnemonicParsing="false" onAction="#display_photo" text="Display the Photo" />
+      <Button fx:id="delete_photo" layoutX="150.0" layoutY="335.0" mnemonicParsing="false" onAction="#delete_photo" text="Delete this Photo" />
       
       
        <!-- caption stuff -->
-  	  <Text fx:id = "photo_caption" text="Caption:"  layoutX = "15.0" layoutY = "385.0" style="-fx-font-weight: bold"/>
-  	  <TextArea fx:id="caption_text" layoutX="15.0" layoutY="395.0" wrapText="true" prefHeight="95.0" prefWidth="300.0"/>
-      <Button fx:id = "save_caption" layoutX="15.0" layoutY="500.0" mnemonicParsing="false" text="Save Changes to Caption" onAction="#change_caption"/>
+  	  <Text fx:id="photo_caption" layoutX="15.0" layoutY="385.0" style="-fx-font-weight: bold" text="Caption:" />
+  	  <TextArea fx:id="caption_text" layoutX="15.0" layoutY="395.0" prefHeight="95.0" prefWidth="300.0" wrapText="true" />
+      <Button fx:id="save_caption" layoutX="15.0" layoutY="500.0" mnemonicParsing="false" onAction="#change_caption" text="Save Changes to Caption" />
       
       
       
        <!-- albums stuff -->
-  	  <Text fx:id = "photo_album" text="Album:"  layoutX = "400.0" layoutY = "325.0" style="-fx-font-weight: bold"/>
-      <ComboBox fx:id = "album_box" layoutX="400.0" layoutY="335.0" prefWidth="325.0" />
-      <Button fx:id = "add_photo_to_album" layoutX="400.0" layoutY="375.0" mnemonicParsing="false" text="Add Photo to this Album" />
-      <Button fx:id = "move_photo_to_album" layoutX="575.0" layoutY="375.0" mnemonicParsing="false" text="Move Photo to this Album"/>
+  	  <Text fx:id="photo_album" layoutX="400.0" layoutY="325.0" style="-fx-font-weight: bold" text="Album:" />
+      <ComboBox fx:id="album_box" layoutX="400.0" layoutY="335.0" prefWidth="325.0" />
+      <Button fx:id="add_photo_to_album" layoutX="400.0" layoutY="375.0" mnemonicParsing="false" text="Add Photo to this Album" onAction = "#add_to_album"/>
+      <Button fx:id="move_photo_to_album" layoutX="575.0" layoutY="375.0" mnemonicParsing="false" text="Move Photo to this Album" onAction = "#move_to_album" />
       
       
       
        <!-- tags stuff -->
-  	  <Text fx:id = "photo_tags" text="Photo Tags:"  layoutX = "400.0" layoutY = "425.0" style="-fx-font-weight: bold"/>
-  	  <Text fx:id = "photo_delete_tag_text" text="Example_ID:"  layoutX = "400.0" layoutY = "450.0"/>
-      <ComboBox fx:id = "tag_delete_dropdown" layoutX="475.0" layoutY="435.0" prefWidth="200.0" />
-      <Button fx:id = "delete_tag" layoutX="700.0" layoutY="435.0" mnemonicParsing="false" text="Delete" onAction = "#delete_tag"/>
+  	  <Text fx:id="photo_tags" layoutX="400.0" layoutY="425.0" style="-fx-font-weight: bold" text="Photo Tags:" />
+  	  <Text fx:id="photo_delete_tag_text" layoutX="400.0" layoutY="450.0" text="Example_ID:" />
+      <ComboBox fx:id="tag_delete_dropdown" layoutX="475.0" layoutY="435.0" prefWidth="200.0" />
+      <Button fx:id="delete_tag" layoutX="700.0" layoutY="435.0" mnemonicParsing="false" onAction="#delete_tag" text="Delete" />
       
       
-  	  <TextField fx:id = "photo_add_tag_id_text" text="Ex: Location"  layoutX = "400.0" layoutY = "475.0"/>
-      <TextField fx:id = "photo_add_tag_text" text="Ex: Madagascar" layoutX="562.0" layoutY="475.0" />
-      <Button fx:id = "add_tag" layoutX="725.0" layoutY="475.0" mnemonicParsing="false" text="Add" onAction = "#add_tag"/>
+  	  <TextField fx:id="photo_add_tag_id_text" layoutX="400.0" layoutY="475.0" text="Ex: Location" />
+      <TextField fx:id="photo_add_tag_text" layoutX="562.0" layoutY="475.0" text="Ex: Madagascar" />
+      <Button fx:id="add_tag" layoutX="725.0" layoutY="475.0" mnemonicParsing="false" onAction="#add_tag" text="Add" />
       
-      <Button fx:id = "logout" layoutX="725.0" layoutY="515.0" mnemonicParsing="false" text="Logout" onAction="#logout"/>
+      <Button fx:id="logout" layoutX="725.0" layoutY="515.0" mnemonicParsing="false" onAction="#logout" text="Logout" />
+      <Button fx:id="back" layoutX="611.0" layoutY="515.0" mnemonicParsing="false" text="Back" onAction="#back"/>
       
       
    </children>
@@ -72,4 +73,3 @@
 
 	
 </AnchorPane>
-

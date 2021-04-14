@@ -20,6 +20,7 @@
       </Text>
       <Button fx:id = "select_photo" layoutX="315.0" layoutY="50.0" mnemonicParsing="false" text="Select Photo" prefHeight="50.0" prefWidth="200.0" onAction = "#select_photo" />
       <Button fx:id = "add_photo" layoutX="450.0" layoutY="475.0" mnemonicParsing="false" text="Add this Photo!" prefHeight="50.0" prefWidth="300.0" onAction = "#add_photo"/>
+      <Button fx:id = "go_back" layoutX = "700.0" layoutY = "25.0" mnemonicParsing = "false" text = "Cancel" onAction = "#back"/>
    	  <Text fx:id = "photo_preview_text" text="Photo Preview:"  layoutX = "150.0" layoutY = "120.0" />
   	 
    	 

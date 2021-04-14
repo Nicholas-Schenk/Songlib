@@ -5,9 +5,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-
+import app.Album;
+import app.CustomImage;
+import app.Tag;
+import app.User;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -101,10 +106,12 @@ public class AdminController {
 				userFile.delete();
 				
 				PrintWriter p = new PrintWriter("src/app/users.txt");
-				for(String username:userList.getItems()) {
+				ObservableList<String> usernames = userList.getItems();
+				for(int i = 0; i < usernames.size(); i++) {
+					String username = usernames.get(i);
 					if (username.equals(selectedUser.getText())) continue;
 					p.print(username);
-					p.print("\n");
+					if (!(i == usernames.size()-2)) p.print("\n");
 				}
 				p.close();
 			    p.close();
@@ -139,7 +146,6 @@ public class AdminController {
 		controller.start(primaryStage);
 		Scene scene = new Scene(root, 800, 550);
 		primaryStage.setScene(scene);
-		//ComboBox combo = new ComboBox;
 		primaryStage.show();
 		}catch(IOException error) {
 		      System.out.println(error);

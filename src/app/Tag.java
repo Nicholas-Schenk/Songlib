@@ -1,6 +1,6 @@
 package app;
 
-public class Tag{
+public class Tag implements java.io.Serializable{
 	private String tag_ID;
 	private String tag;
 	public Tag(String tagID, String tag){

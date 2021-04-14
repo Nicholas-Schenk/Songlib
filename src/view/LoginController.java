@@ -12,6 +12,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.FileInputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 
 import javafx.collections.FXCollections;
@@ -54,10 +57,32 @@ public class LoginController {
 	
 	public void start(Stage mainStage) {
 		try {
+			
+
+			user_list = new ArrayList<User>();
 			File file = new File("src/app/users.txt");  //stores users so that they persist  
 			Scanner s = new Scanner(file);
 			System.out.println("opened scanner");
 			while(s.hasNextLine()) {
+				String k = s.nextLine();
+				System.out.println(k);
+				users.add(k);
+				if(!(k.equals("admin"))) {
+					try {
+						ObjectInputStream ois = new ObjectInputStream(new FileInputStream("data\\users\\"+k+".txt"));
+						User temp = (User)ois.readObject();
+						user_list.add(temp);
+					}catch(IOException ero) {
+						user_list.add(new User(k));
+						//System.out.println(ero.getStackTrace()[0].getLineNumber() );
+					}
+				}
+				
+				
+			}
+			
+			
+			/*
 				String k = s.nextLine();
 				users.add(k);
 				if(!(k.equals("admin"))) {
@@ -67,17 +92,17 @@ public class LoginController {
 				BufferedReader reader = new BufferedReader(new FileReader(userData));
 				System.out.println("opened user's text file");
 				String line = reader.readLine();
+				ArrayList<Album> temp_album_list = new ArrayList<Album>();
 				while(line != null ) {
-					if(line.equals("")) {
-						break;
-					}
-					ArrayList<Album> temp_album_list = new ArrayList<Album>();
 					if(line.substring(0,6).equals("ALBUM:")) {
 						System.out.println("first line was album");
 						Album new_album = new Album(line.substring(6));
 						line = reader.readLine();
+						if(line != null) {
 						while(!(line.substring(0,6).equals("ALBUM:"))) {
 							if(line.substring(0,6).equals("PHOTO:")) {
+								ArrayList<CustomImage> temp_image_list = new_album.getImageList();
+								System.out.println("adding a photo");
 								Image new_Image = new Image(line.substring(6));
 								ImageView new_ImageView = new ImageView(new_Image);
 								CustomImage new_CustomImage = new CustomImage(new_ImageView, null, line.substring(6));
@@ -87,49 +112,71 @@ public class LoginController {
 										String tag_and_tag_id = line.substring(4);
 										String[] tag_arr = tag_and_tag_id.split(":");
 										Tag new_tag = new Tag(tag_arr[0], tag_arr[1]);
+										System.out.println("added tag:"+new_tag.toString());
 									    new_CustomImage.addTag(new_tag);
-									}else if(line.substring(0, 8).equals("CAPTION:")) {
-										String caption_text = line.substring(8);
-										new_CustomImage.setCaption(new Text(caption_text));									
 									}else if(line.substring(0, 5).equals("DATE:")) {
 									    Calendar cal = Calendar.getInstance();
 										String date_string = line.substring(5);
-										long date_long = Long.parseLong(date_string);
-										cal.setTimeInMillis(date_long);
-									    cal.set(Calendar.MILLISECOND,0);
-									    new_CustomImage.setDate(cal);	
+										if(date_string.equals("0")) {
+											new_CustomImage.setDate(null);
+											System.out.println("added date:0");
+										}else {
+											long date_long = Long.parseLong(date_string);
+											cal.setTimeInMillis(date_long);
+											cal.set(Calendar.MILLISECOND,0);
+											new_CustomImage.setDate(cal);
+											System.out.println("added date:"+date_string);
+										}
+									}else if(line.length()>6) {
+										if(line.substring(0, 8).equals("CAPTION:")){ 
+											String caption_text = line.substring(8);
+											new_CustomImage.setCaption(new Text(caption_text));	
+											System.out.println("added caption:"+caption_text);
+										}								
 									}
 									line = reader.readLine();
+									//ArrayList<CustomImage> temp_image_list = new_album.getImageList();
 									if(line == null||line.equals("")) {
+										System.out.println("adding image now to album: "+new_album.getName()+ "photo:"+new_CustomImage.getPath());
+
+										temp_image_list.add(new_CustomImage);
 										break;
+									}else if(line.length()> 5) {
+										if((line.substring(0,6).equals("ALBUM:")) || (line.substring(0,6).equals("PHOTO:"))) {
+											System.out.println("adding image now to album: "+new_album.getName()+ "photo:"+new_CustomImage.getPath());
+
+											temp_image_list.add(new_CustomImage);
+										}
 									}
 									
 								}
 								
-								
-								ArrayList<CustomImage> temp_image_list = new_album.getImageList();
-								temp_image_list.add(new_CustomImage);
+								//ArrayList<CustomImage> temp_image_list = new_album.getImageList();
+								//temp_image_list.add(new_CustomImage);
+								System.out.println("added list to album");
 								new_album.setImageList(temp_image_list);
 								if(line == null || line.equals("")) {
 									break;
 								}
 							}
 						}
+						}
+					
 						
-						
-						
-						
-						
+						System.out.println("added album to album list");
 						temp_album_list.add(new_album);
 					}
+				
+				
 					
 				}
-
+				temp.setAlbumData(temp_album_list);
 				user_list.add(temp);
 				}
 			}
-			s.close();
+			s.close();*/
 		}catch (Exception e) {
+			e.printStackTrace();
 			System.out.println(e);
 		}
 	}
@@ -156,8 +203,7 @@ public class LoginController {
 							loader.getController();
 					controller.start(primaryStage);
 					Scene scene = new Scene(root, 600, 400);
-					primaryStage.setScene(scene);					
-					primaryStage.show();
+					primaryStage.setScene(scene);		
 				}catch (IOException error) {
 				    System.err.println(String.format("Error: %s", error.getMessage()));
 				}

@@ -1,12 +1,20 @@
 package view;
 
 import java.io.BufferedWriter;
+import view.LoginController;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import app.Album;
+import app.CustomImage;
+import app.Tag;
 import app.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -52,15 +60,41 @@ public class CreateAlbumController {
 			try {
 				File userData = new File("data\\users\\" + user.getUsername() + ".txt");
 				userData.createNewFile();
+				//File userData2 = new File("data\\users\\" + user.getUsername() + "2.txt");
+				//userData2.createNewFile();
 				System.out.print("created file " + user.getUsername());
-				BufferedWriter writer = new BufferedWriter(new FileWriter(userData, true));
-			    writer.append("\n");
-			    writer.append("ALBUM:" + newAlbumName.getText());
-			    writer.close();
 			    user.addAlbum(newAlbumName.getText());
-			    ArrayList<Album>  album_data = new ArrayList<Album>();
-			    album_data.add(new Album(newAlbumName.getText()));
-			    user.setAlbumData(album_data);
+			    //user.setAlbumData(album_data);
+			    System.out.println(LoginController.user_list.size());
+			    for(int z = 0; z< LoginController.user_list.size();z++) {
+				    if(LoginController.user_list.get(z).getUsername().equals(user.getUsername())) {	
+				    	//LoginController.user_list.remove(z);
+				    	//LoginController.user_list.add(z, user);
+				    	if(LoginController.user_list.get(z).getAlbumData() == null) {
+				    		System.out.println("IT WAS NULL??");
+				    		LoginController.user_list.get(z).setAlbumData(new ArrayList<Album>());
+				    	}
+				    	LoginController.user_list.get(z).getAlbumData().add(new Album(newAlbumName.getText()));
+				    	System.out.println("IT WORKED??");
+				    	for(int i = 0; i < LoginController.user_list.get(z).getAlbumData().size(); i++) {
+				    		System.out.println(LoginController.user_list.get(z).getAlbumData().get(i).getImageList());
+				    	}
+				    	//System.out.println(LoginController.user_list.get(z).getAlbumData().get(0).getName());
+				    	ArrayList<User> users = LoginController.user_list;
+				    	for(User i: users) {
+							ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data\\users\\"+i.getUsername()+".txt"));
+							oos.writeObject(i);
+							oos.close();
+				    	}
+				
+				    	
+
+				    	
+				    	
+				    	
+				    	
+				    }
+			    }
 			}catch(IOException error) {
 			      System.out.println(error);
 			}
@@ -116,7 +150,6 @@ public class CreateAlbumController {
 		controller.start(primaryStage);
 		Scene scene = new Scene(root, 800, 550);
 		primaryStage.setScene(scene);
-		//ComboBox combo = new ComboBox;
 		primaryStage.show();
 		}catch(IOException error) {
 		      System.out.println(error);

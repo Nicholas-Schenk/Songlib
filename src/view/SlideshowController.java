@@ -3,6 +3,7 @@ package view;
 import java.io.File;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
@@ -26,8 +27,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import app.Album;
 import app.CustomImage;
+import app.StoreableImage;
 import app.Tag;
+import app.User;
 import view.PhotosController;
 import java.util.Calendar;
 
@@ -41,15 +45,36 @@ public class SlideshowController {
 	@FXML private Button back;
 	
 	CustomImage selected_photo = PhotosController.selected_photo;
-	public void start(Stage mainStage) {
-		photo_preview_text.setText(photo_preview_text.getText()+PhotosController.selected_photo.getStringDate());
-		caption_text.setText(PhotosController.selected_photo.getCaption().getText());
-		photo.setImage(PhotosController.selected_photo.getImage().getImage());
-		for(int i = 0; i < PhotosController.selected_photo.getTagList().size(); i++) {
+	User this_user;
+	String albumName;
+	StoreableImage temp_store = new StoreableImage(null, null);
+	public void start(Stage mainStage, User user, String albumname) {
+		
+		this_user = user;
+		albumName = albumname;
+		for(int i = 0; i < LoginController.user_list.size();i++) {
+			if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+				for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+					if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumName)) {
+						for(int k =0; k < LoginController.user_list.get(i).getAlbumData().get(j).getImageList().size();k++) {
+							if(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getPath().equals(PhotosController.selected_photo.getPath())) {
+								temp_store = LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		
+		photo_preview_text.setText(photo_preview_text.getText()+temp_store.getStringDate());
+		caption_text.setText(temp_store.getCaption());
+		photo.setImage(new Image(temp_store.getPath()));
+		for(int i = 0; i < temp_store.getTagList().size(); i++) {
 			if(photos_tags_text.getText() == "") {
-				photos_tags_text.setText(PhotosController.selected_photo.getTagList().get(i).toString());
+				photos_tags_text.setText(temp_store.getTagList().get(i).toString());
 			}else {
-				photos_tags_text.setText(photos_tags_text.getText()+", "+PhotosController.selected_photo.getTagList().get(i));
+				photos_tags_text.setText(photos_tags_text.getText()+", "+temp_store.getTagList().get(i));
 			}
 		}
 		double ratio = photo.getImage().getHeight()/photo.getFitHeight();
@@ -72,15 +97,33 @@ public class SlideshowController {
 		//}
 		if(index > 0) {
 			selected_photo = PhotosController.imgList.get(index-1);
-			photo_preview_text.setText("Photo Taken: "+PhotosController.imgList.get(index-1).getStringDate());
-			caption_text.setText(PhotosController.imgList.get(index-1).getCaption().getText());
-			photo.setImage(PhotosController.imgList.get(index-1).getImage().getImage());
+			for(int i = 0; i < LoginController.user_list.size();i++) {
+				if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+					for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+						if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumName)) {
+							for(int k =0; k < LoginController.user_list.get(i).getAlbumData().get(j).getImageList().size();k++) {
+								if(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getPath().equals(selected_photo.getPath())) {
+									temp_store = LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k);
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			
+			
+			System.out.println(temp_store.getTagList().size()+ "tag size "+ temp_store.getPath());
+			
+			photo_preview_text.setText("Photo Taken: "+temp_store.getStringDate());
+			caption_text.setText(temp_store.getCaption());
+			photo.setImage(new Image(temp_store.getPath()));
 			photos_tags_text.setText("");
-			for(int i = 0; i < PhotosController.imgList.get(index-1).getTagList().size(); i++) {
+			for(int i = 0; i < temp_store.getTagList().size(); i++) {
 				if(photos_tags_text.getText() == "") {
-					photos_tags_text.setText(PhotosController.imgList.get(index-1).getTagList().get(i).toString());
+					photos_tags_text.setText(temp_store.getTagList().get(i).toString());
 				}else {
-					photos_tags_text.setText(photos_tags_text.getText()+", "+PhotosController.imgList.get(index-1).getTagList().get(i));
+					photos_tags_text.setText(photos_tags_text.getText()+", "+temp_store.getTagList().get(i));
 				}
 			}
 			double ratio = photo.getImage().getHeight()/photo.getFitHeight();
@@ -105,15 +148,30 @@ public class SlideshowController {
 		}*/
 		if(index < PhotosController.imgList.size()-1) {
 			selected_photo = PhotosController.imgList.get(index+1);
-			photo_preview_text.setText("Photo Taken: "+PhotosController.imgList.get(index+1).getStringDate());
-			caption_text.setText(PhotosController.imgList.get(index+1).getCaption().getText());
-			photo.setImage(PhotosController.imgList.get(index+1).getImage().getImage());
+			
+			for(int i = 0; i < LoginController.user_list.size();i++) {
+				if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+					for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+						if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumName)) {
+							for(int k =0; k < LoginController.user_list.get(i).getAlbumData().get(j).getImageList().size();k++) {
+								if(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getPath().equals(selected_photo.getPath())) {
+									temp_store = LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k);
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			photo_preview_text.setText("Photo Taken: "+temp_store.getStringDate());
+			caption_text.setText(temp_store.getCaption());
+			photo.setImage(new Image(temp_store.getPath()));
 			photos_tags_text.setText("");
-			for(int i = 0; i < PhotosController.imgList.get(index+1).getTagList().size(); i++) {
+			for(int i = 0; i < temp_store.getTagList().size(); i++) {
 				if(photos_tags_text.getText() == "") {
-					photos_tags_text.setText(PhotosController.imgList.get(index+1).getTagList().get(i).toString());
+					photos_tags_text.setText(temp_store.getTagList().get(i).toString());
 				}else {
-					photos_tags_text.setText(photos_tags_text.getText()+", "+PhotosController.imgList.get(index+1).getTagList().get(i));
+					photos_tags_text.setText(photos_tags_text.getText()+", "+temp_store.getTagList().get(i));
 				}
 			}
 			double ratio = photo.getImage().getHeight()/photo.getFitHeight();
@@ -137,7 +195,7 @@ public class SlideshowController {
 			AnchorPane root = (AnchorPane)loader.load();
 			PhotosController photosController = 
 					loader.getController();
-			photosController.start(primaryStage, null, null);
+			photosController.start(primaryStage, this_user, albumName);
 			Scene scene = new Scene(root, 800, 550);
 			primaryStage.setScene(scene);
 			primaryStage.show();

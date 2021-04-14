@@ -1,14 +1,22 @@
 package view;
 
 import java.util.ArrayList;
+
+import app.Album;
 import app.CustomImage;
+import app.StoreableImage;
 import app.Tag;
 import app.User;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 
 import javafx.collections.FXCollections;
@@ -35,8 +43,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-public class PhotosController {
+import view.LoginController;
 
+public class PhotosController {
+	
 
 	// widget from fxml for tableView
 	@FXML private TableView<CustomImage> tableView;
@@ -50,6 +60,7 @@ public class PhotosController {
 	@FXML private Text Album_name;
 	
 	@FXML private Button logout;
+	@FXML private Button back;
 	
 
 	//private ObservableList<String> obsList; 
@@ -58,8 +69,9 @@ public class PhotosController {
 
 	@FXML private ComboBox tag_delete_dropdown;
 
+	@FXML private ComboBox album_box;
 	ObservableList<Tag> dropdown_list = FXCollections.observableArrayList();
-	
+	ObservableList<String> album_list = FXCollections.observableArrayList();
 	
 		
 	private String albumName;
@@ -68,13 +80,17 @@ public class PhotosController {
 	public void start(Stage mainStage, User user, String albumname) { 
 		albumName = albumname;
 		this_user = user;
-		System.out.println(user);
+		if(user == null) {
+			System.out.println("ahhhhhh");
+		}
+		System.out.println(user+ "---");
 		System.out.println(albumname);
 		Album_name.setText(albumname);
 			tableView.setEditable(true);
+			imgList = null;
 			if(imgList == null) {
 				imgList = FXCollections.observableArrayList();
-	        	ImageView imageView = new ImageView(new Image("/app/llama.jpg"));
+	        	/*ImageView imageView = new ImageView(new Image("/app/llama.jpg"));
 	        	imageView.setFitHeight(50);
 	        	imageView.setFitWidth(50);
 	        	ImageView imageView2 = new ImageView(new Image("/app/llama.jpg"));
@@ -85,6 +101,43 @@ public class PhotosController {
 	        	CustomImage item_1 = new CustomImage(imageView, text, "/app/llama.jpg");
 	        	CustomImage item_2 = new CustomImage(imageView2, text2, "/app/llama.jpg");
 	        	imgList.addAll(item_1, item_2);
+	        	ArrayList<CustomImage> temp_arr_list = new ArrayList<CustomImage>();
+	        	temp_arr_list.add(item_1);
+	        	temp_arr_list.add(item_2);*/
+	        	for(int i = 0; i < LoginController.user_list.size();i++) {
+	        		System.out.println("hello + "+LoginController.user_list.get(i).getUsername()+ LoginController.user_list.size());
+	        		if((LoginController.user_list.get(i).getUsername()).equals(this_user.getUsername())) {
+
+		        		System.out.println("hello-");
+	        			if(LoginController.user_list.get(i).getAlbumData() == null) {
+	    	        		System.out.println("hello--");
+	    	        		LoginController.user_list.get(i).setAlbumData(new ArrayList<Album>());
+	    	        		LoginController.user_list.get(i).getAlbumData().add(new Album(albumname));
+	    	        
+	        			}
+	        			for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size(); j++) {
+	        				
+	    	        		System.out.println("hello------");
+	        				if( LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumname)) {
+	        					System.out.println("success");
+	        					//LoginController.user_list.get(i).getAlbumData().get(j).setImageList(temp_arr_list);
+	        					for(int k = 0; k < LoginController.user_list.get(i).getAlbumData().get(j).getImageList().size(); k++) {
+	        						System.out.println(k);
+	        						ImageView temp = new ImageView(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getPath());
+	        						
+	        						temp.setFitHeight(50);
+	        						temp.setFitWidth(50);
+	        						//LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getImage().setFitWidth(50);
+	        						CustomImage temp_cust = new CustomImage(temp, LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getCaption(), LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getPath());
+	        						temp_cust.setTagList(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getTagList());
+	        						temp_cust.setDate(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getDate());
+	        						imgList.add(temp_cust);
+	        					}
+	        				}
+	        			}
+	        			
+	        		}
+	        	}
 			}
 	        /* initialize and specify table column */
 	        TableColumn<CustomImage, ImageView> firstColumn = new TableColumn<CustomImage, ImageView>("Images");
@@ -105,6 +158,34 @@ public class PhotosController {
 		// select the first item
 		tableView.getSelectionModel().select(0);
 		
+		ArrayList<String> the_album_list = new ArrayList<String>();
+		for(int i = 0; i < LoginController.user_list.size();i++) {
+			if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+				for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+					the_album_list.add(LoginController.user_list.get(i).getAlbumData().get(j).getName());
+				}
+			}
+		}
+
+		album_list = FXCollections.observableArrayList();
+		album_list.addAll(the_album_list);
+	
+
+		album_box.setItems(null);
+		album_box.setItems(album_list);
+		
+
+		CustomImage item = tableView.getSelectionModel().getSelectedItem();
+		if(item != null) {
+			ArrayList<Tag> tag_list = item.getTagList();
+			dropdown_list = FXCollections.observableArrayList();
+			dropdown_list.addAll(tag_list);
+			
+			tag_delete_dropdown.setItems(null);
+			tag_delete_dropdown.setItems(dropdown_list);
+			
+
+		}
 
 		tableView
 		.getSelectionModel()
@@ -112,6 +193,9 @@ public class PhotosController {
 		.addListener(
 				(obs, oldVal, newVal) -> 
 				showItemInputDialog(mainStage));
+		
+		
+		System.out.println(this_user + "-----");
 
 		
 	}
@@ -119,6 +203,9 @@ public class PhotosController {
 	private void showItemInputDialog(Stage mainStage) {      
 		System.out.println("HEY");
 		CustomImage item = tableView.getSelectionModel().getSelectedItem();
+		if(item == null) {
+			return;
+		}
 		ArrayList<Tag> tag_list = item.getTagList();
 		dropdown_list = FXCollections.observableArrayList();
 		dropdown_list.addAll(tag_list);
@@ -140,7 +227,7 @@ public class PhotosController {
 		
 		Text text = new Text(caption_text.getText());
 		//System.out.println(text);
-		selected.setCaption(text);
+		selected.setCaption(text.getText());
 		//imgList.add(selected, index);
 		imgList.removeAll(imgList);
 		for(int i = 0; i < temp.size(); i++) {
@@ -152,20 +239,94 @@ public class PhotosController {
 			}
 		}
 		
+		
+		for(int i = 0; i < LoginController.user_list.size();i++) {
+			if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+				for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+					if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumName)) {
+						LoginController.user_list.get(i).getAlbumData().get(j).setImageList(new ArrayList<StoreableImage>());
+						for(int k = 0; k < imgList.size(); k++) {
+    						System.out.println(k);
+    						CustomImage cimage = imgList.get(k);
+    						StoreableImage simage = new StoreableImage(cimage.getCaption(), cimage.getPath()); 
+
+    						simage.setTagList(cimage.getTagList());
+    						simage.setDate(cimage.getDate());
+    						
+    						LoginController.user_list.get(i).getAlbumData().get(j).getImageList().add(simage);
+    						//imgList.add(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k));
+    					}
+					}
+				}
+			}
+			
+		}
+		
+		//write to file
+	  	//ArrayList<User> users = LoginController.user_list;
+		 ArrayList<User> users = LoginController.user_list;
+	    	for(User i: users) {
+	    		try {
+	    			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data\\users\\"+i.getUsername()+".txt"));
+	    			oos.writeObject(i);
+	    			oos.close();
+	    		}catch(Exception ero) {
+					System.out.println(ero);
+				}
+	    	}
+		
+		
 	}
 	public void delete_photo(ActionEvent e) {
 		ObservableList<CustomImage> temp = FXCollections.observableArrayList(imgList);
 		FXCollections.copy(temp, imgList);
 		int index = tableView.getSelectionModel().getSelectedIndex();
 		if(index < 0 || index > imgList.size()) {
+			System.out.println("hello");
 			return;
 		}
 		//CustomImage selected = imgList.get(index);
+		System.out.println("hello-"+temp.size());
 		temp.remove(index);
 		imgList.removeAll(imgList);
+		System.out.println("----"+imgList.size());
 		for(int i = 0; i < temp.size(); i++) {
 				imgList.add(temp.get(i));
 		}
+		System.out.println(imgList.size());
+		
+		for(int i = 0; i < LoginController.user_list.size();i++) {
+			if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+				for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+					if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumName)) {
+						LoginController.user_list.get(i).getAlbumData().get(j).setImageList(new ArrayList<StoreableImage>());
+						for(int k = 0; k < imgList.size(); k++) {
+    						System.out.println(k);
+    						CustomImage cimage = imgList.get(k);
+    						StoreableImage simage = new StoreableImage(cimage.getCaption(), cimage.getPath()); 
+    						
+
+    						simage.setTagList(cimage.getTagList());
+    						simage.setDate(cimage.getDate());
+    						LoginController.user_list.get(i).getAlbumData().get(j).getImageList().add(simage);
+    					}
+					}
+				}
+			}
+			
+		}
+		
+		//write to file
+		   ArrayList<User> users = LoginController.user_list;
+	    	for(User i: users) {
+	    		try {
+	    			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data\\users\\"+i.getUsername()+".txt"));
+	    			oos.writeObject(i);
+	    			oos.close();
+	    		}catch(Exception ero) {
+					System.out.println(ero);
+				}
+	    	}
 	}
 	public void add_test(ActionEvent event) {
 		Node node = (Node) event.getSource();
@@ -217,6 +378,41 @@ public class PhotosController {
 				tag_delete_dropdown.setItems(dropdown_list);
 				new_CustomImage.setTagList(tag_list);
 				System.out.println(new_tag);
+				
+				
+				for(int i = 0; i < LoginController.user_list.size();i++) {
+					if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+						for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+							if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumName)) {
+								LoginController.user_list.get(i).getAlbumData().get(j).setImageList(new ArrayList<StoreableImage>());
+								for(int k = 0; k < imgList.size(); k++) {
+		    						System.out.println(k);
+		    						CustomImage cimage = imgList.get(k);
+		    						StoreableImage simage = new StoreableImage(cimage.getCaption(), cimage.getPath()); 
+
+		    						simage.setTagList(cimage.getTagList());
+		    						simage.setDate(cimage.getDate());
+		    						LoginController.user_list.get(i).getAlbumData().get(j).getImageList().add(simage);
+		    					}
+							}
+						}
+					}
+					
+				}
+				
+				//write to file
+			  	//ArrayList<User> users = LoginController.user_list;
+				   ArrayList<User> users = LoginController.user_list;
+			    	for(User i: users) {
+			    		try {
+			    			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data\\users\\"+i.getUsername()+".txt"));
+			    			oos.writeObject(i);
+			    			oos.close();
+			    		}catch(Exception ero) {
+							System.out.println(ero);
+						}
+			    	}
+				
 			}
 		}
 	
@@ -241,7 +437,45 @@ public class PhotosController {
 					break;
 				}
 			}
+			
+
+			for(int i = 0; i < LoginController.user_list.size();i++) {
+				if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+					for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+						if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumName)) {
+							LoginController.user_list.get(i).getAlbumData().get(j).setImageList(new ArrayList<StoreableImage>());
+							for(int k = 0; k < imgList.size(); k++) {
+
+	    						System.out.println(k);
+	    						CustomImage cimage = imgList.get(k);
+	    						StoreableImage simage = new StoreableImage(cimage.getCaption(), cimage.getPath()); 
+	    						
+
+	    						simage.setTagList(cimage.getTagList());
+	    						simage.setDate(cimage.getDate());
+	    						LoginController.user_list.get(i).getAlbumData().get(j).getImageList().add(simage);
+	    					}
+						}
+					}
+				}
+				
+			}
+			
+			//write to file
+		  	//ArrayList<User> users = LoginController.user_list;
+			   ArrayList<User> users = LoginController.user_list;
+		    	for(User i: users) {
+		    		try {
+		    			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data\\users\\"+i.getUsername()+".txt"));
+		    			oos.writeObject(i);
+		    			oos.close();
+		    		}catch(Exception ero) {
+						System.out.println(ero);
+					}
+		    	}
 		}
+		
+		
 	}
 	
 	
@@ -260,7 +494,7 @@ public class PhotosController {
 			AnchorPane root = (AnchorPane)loader.load();
 			DisplayPhotoController controller = 
 					loader.getController();
-			controller.start(primaryStage);
+			controller.start(primaryStage, this_user, albumName);
 			Scene scene = new Scene(root, 800, 550);
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -287,7 +521,7 @@ public class PhotosController {
 			AnchorPane root = (AnchorPane)loader.load();
 			SlideshowController controller = 
 					loader.getController();
-			controller.start(primaryStage);
+			controller.start(primaryStage, this_user, albumName);
 			Scene scene = new Scene(root, 800, 550);
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -299,7 +533,32 @@ public class PhotosController {
 		
 	}
 	
+	public void back(ActionEvent e) {
+		Node node = (Node) e.getSource();
+		Stage primaryStage = (Stage) node.getScene().getWindow();
+		FXMLLoader loader = new FXMLLoader();   
+		loader.setLocation(
+				getClass().getResource("/view/UserView.fxml"));
+		try {
+			AnchorPane root = (AnchorPane)loader.load();
+			UserViewController controller = 
+					loader.getController();
+			controller.start(primaryStage, this_user);
+			Scene scene = new Scene(root, 800, 550);
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		}catch (IOException error) {
+		    System.err.println(String.format("Error: %s", error.getMessage()));
+		}
+	}
+	
 	public void logout(ActionEvent e) {
+
+        tableView.setItems(null);
+        
+
+		System.out.println("hello, size is  "+ LoginController.user_list.size());
+        
 		Node node = (Node) e.getSource();
 		Stage primaryStage = (Stage) node.getScene().getWindow();
 		FXMLLoader loader = new FXMLLoader();   
@@ -313,11 +572,182 @@ public class PhotosController {
 		controller.start(primaryStage);
 		Scene scene = new Scene(root, 800, 550);
 		primaryStage.setScene(scene);
-		//ComboBox combo = new ComboBox;
 		primaryStage.show();
 		}catch(IOException error) {
 		      System.out.println(error);
 		}
+	}
+	
+	public void add_to_album(ActionEvent e) {
+		int index =tableView.getSelectionModel().getSelectedIndex();
+		if(index <0) {
+			return;
+		}
+		CustomImage new_CustomImage = imgList.get(index);
+		if(new_CustomImage == null) {
+			return;
+		}else {
+			if(album_box.getValue() == null) {
+				return;
+			}
+			String new_album = album_box.getValue().toString();
+			if(new_album == null || new_album.equals(albumName)) {
+				return;
+			}else {
+				for(int i = 0; i < LoginController.user_list.size();i++) {
+					if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+						for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+							if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(new_album)) {
+								//LoginController.user_list.get(i).getAlbumData().get(j).setImageList(new ArrayList<StoreableImage>());
+								if(LoginController.user_list.get(i).getAlbumData().get(j).getImageList() == null) {
+									LoginController.user_list.get(i).getAlbumData().get(j).setImageList(new ArrayList<StoreableImage>());
+		    						CustomImage cimage = new_CustomImage;
+		    						StoreableImage simage = new StoreableImage(cimage.getCaption(), cimage.getPath()); 
+
+		    						simage.setTagList(cimage.getTagList());
+		    						simage.setDate(cimage.getDate());
+		    						LoginController.user_list.get(i).getAlbumData().get(j).getImageList().add(simage);
+								}else {
+									boolean duplicate = false;
+									for(int k = 0; k < LoginController.user_list.get(i).getAlbumData().get(j).getImageList().size() ; k++) {
+										if(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getPath().equals(new_CustomImage.getPath())) {
+											duplicate = true;
+										}
+			    					}
+									if(duplicate == false) {
+			    						CustomImage cimage = new_CustomImage;
+			    						StoreableImage simage = new StoreableImage(cimage.getCaption(), cimage.getPath()); 
+
+			    						simage.setTagList(cimage.getTagList());
+			    						simage.setDate(cimage.getDate());
+			    						LoginController.user_list.get(i).getAlbumData().get(j).getImageList().add(simage);
+									}
+								}
+							}
+						}
+					}
+					
+				}
+				
+				//write to file
+			  	//ArrayList<User> users = LoginController.user_list;
+				   ArrayList<User> users = LoginController.user_list;
+			    	for(User i: users) {
+			    		try {
+			    			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data\\users\\"+i.getUsername()+".txt"));
+			    			oos.writeObject(i);
+			    			oos.close();
+			    		}catch(Exception ero) {
+							System.out.println(ero);
+						}
+			    	}
+				
+			}
+		}
+	
+	
+	}
+	
+
+	public void move_to_album(ActionEvent e) {
+		int index =tableView.getSelectionModel().getSelectedIndex();
+		boolean moved = false;
+		if(index <0) {
+			return;
+		}
+		CustomImage new_CustomImage = imgList.get(index);
+		if(new_CustomImage == null) {
+			return;
+		}else {
+			if(album_box.getValue() == null) {
+				return;
+			}
+			String new_album = album_box.getValue().toString();
+			if(new_album == null || new_album.equals(albumName)) {
+				return;
+			}else {
+				for(int i = 0; i < LoginController.user_list.size();i++) {
+					if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
+						for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+							if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(new_album)) {
+								//LoginController.user_list.get(i).getAlbumData().get(j).setImageList(new ArrayList<StoreableImage>());
+								if(LoginController.user_list.get(i).getAlbumData().get(j).getImageList() == null) {
+									LoginController.user_list.get(i).getAlbumData().get(j).setImageList(new ArrayList<StoreableImage>());
+		    						CustomImage cimage = new_CustomImage;
+		    						StoreableImage simage = new StoreableImage(cimage.getCaption(), cimage.getPath()); 
+
+		    						simage.setTagList(cimage.getTagList());
+		    						simage.setDate(cimage.getDate());
+		    						LoginController.user_list.get(i).getAlbumData().get(j).getImageList().add(simage);
+								}else {
+									boolean duplicate = false;
+									for(int k = 0; k < LoginController.user_list.get(i).getAlbumData().get(j).getImageList().size() ; k++) {
+										if(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getPath().equals(new_CustomImage.getPath())) {
+											duplicate = true;
+										}
+			    					}
+									if(duplicate == false) {
+			    						CustomImage cimage = new_CustomImage;
+			    						StoreableImage simage = new StoreableImage(cimage.getCaption(), cimage.getPath()); 
+
+			    						simage.setTagList(cimage.getTagList());
+			    						simage.setDate(cimage.getDate());
+			    						LoginController.user_list.get(i).getAlbumData().get(j).getImageList().add(simage);
+			    						moved = true;
+									}
+								}
+							}else if((LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumName))) {
+
+								
+
+								boolean duplicate = false;
+
+								for(int m = 0; m < LoginController.user_list.get(i).getAlbumData().size();m++) {
+									if(LoginController.user_list.get(i).getAlbumData().get(m).getName().equals(new_album)) {
+										for(int k = 0; k < LoginController.user_list.get(i).getAlbumData().get(m).getImageList().size() ; k++) {
+											if(LoginController.user_list.get(i).getAlbumData().get(m).getImageList().get(k).getPath().equals(new_CustomImage.getPath())) {
+												System.out.println("what?");
+												duplicate = true;
+											}
+										}
+									}
+								}
+								if(moved == true) {
+									duplicate = false;
+								}
+								
+								if(duplicate == false) {
+									System.out.println("removing");
+									for(int k = 0; k < LoginController.user_list.get(i).getAlbumData().get(j).getImageList().size() ; k++) {
+										if(LoginController.user_list.get(i).getAlbumData().get(j).getImageList().get(k).getPath().equals(new_CustomImage.getPath())) {
+											LoginController.user_list.get(i).getAlbumData().get(j).getImageList().remove(k);
+											imgList.remove(k);
+										}
+									}
+								}
+							}
+						}
+					}
+					
+				}
+				
+				//write to file
+			  	//ArrayList<User> users = LoginController.user_list;
+				   ArrayList<User> users = LoginController.user_list;
+			    	for(User i: users) {
+			    		try {
+			    			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data\\users\\"+i.getUsername()+".txt"));
+			    			oos.writeObject(i);
+			    			oos.close();
+			    		}catch(Exception ero) {
+							System.out.println(ero);
+						}
+			    	}
+				
+			}
+		}
+	
+	
 	}
 	
 	

@@ -8,9 +8,14 @@ import javafx.stage.FileChooser;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 
 import javafx.collections.FXCollections;
@@ -39,6 +44,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import app.Album;
+import app.CustomImage;
+import app.Tag;
 import app.User;
 
 public class UserViewController {
@@ -62,26 +70,27 @@ public class UserViewController {
 	public User gerUser() {
 		return this.user;
 	}
-	
+	User this_user;
 	public void start(Stage mainStage, User u) {
+		this_user = u;
 		setUser(u);
 		username.setText(u.toString());
-		try {
-		File userData = new File("data\\users\\" + user.getUsername() + ".txt");
-		Scanner reader = new Scanner(userData);
-		while(reader.hasNextLine()) {
-			String data = reader.nextLine();
-			if(data.length() > 5 && data.substring(0, 6).equals("ALBUM:")) {
-				albums.getItems().add(data.substring(6));
-				user.addAlbum(data.substring(6));
-				
-			}
-		}
-		reader.close();
-		}catch (IOException error) {
-		    System.err.println(String.format("Error: %s", error.getMessage()));
-		}
-		
+		//try {
+
+				try {
+						ObjectInputStream ois = new ObjectInputStream(new FileInputStream("data\\users\\"+user.getUsername()+".txt"));
+						User temp = (User)ois.readObject();
+						for(int i = 0; i < temp.getAlbumData().size(); i++) {
+							albums.getItems().add(temp.getAlbumData().get(i).getName());
+							user.addAlbum(temp.getAlbumData().get(i).getName());
+						}
+						ois.close();
+						
+						//user_list.add(temp);
+					}catch(Exception ero) {
+						//user_list.add(new User(k));
+						//System.out.println(ero.getStackTrace()[0].getLineNumber() );
+					}
 		albums
 		.getSelectionModel()
 		.selectedIndexProperty()
@@ -120,32 +129,37 @@ public class UserViewController {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Confirmation Dialog");
 		alert.setHeaderText("Rename " + oldName + " to " + newName.getText());
-
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK){
-			try {
-				File userData = new File("data\\users\\" + user.getUsername() + ".txt");
-				BufferedReader reader = new BufferedReader(new FileReader(userData));
-				String line = reader.readLine();
-				String oldContent = "";
-		        while (line != null) 
-		        {
-		            oldContent = oldContent + line + System.lineSeparator();
-		            line = reader.readLine();
-		        }
-		        String newContent = oldContent.replaceAll("ALBUM:" + oldName, "ALBUM:" + newName.getText());
-		        FileWriter writer = new FileWriter(userData);
-		        writer.write(newContent);
-				reader.close();
-				writer.close();
-				}catch (IOException error) {
-				    System.err.println(String.format("Error: %s", error.getMessage()));
-				}
+			
+			//this section isn't working
 				albums.getItems().remove(oldName);
 				albums.getItems().add(newName.getText());
 				user.deleteAlbum(oldName);
 				user.addAlbum(newName.getText());
 				albums.getSelectionModel().select(newName.getText());
+				
+				
+				//stuff to make persistent update
+				for(int i = 0; i < LoginController.user_list.size();i++) {
+					if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())){
+						for(int j=0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
+							if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(oldName)) {
+								LoginController.user_list.get(i).getAlbumData().get(j).setName(newName.getText());
+							}
+						}
+					}
+				}
+				try {
+				ArrayList<User> users = LoginController.user_list;
+					for(User i: users) {
+					ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data\\users\\"+i.getUsername()+".txt"));
+					oos.writeObject(i);
+					oos.close();
+		    	}
+				}catch(Exception ero) {
+					System.out.println(ero);
+				}
 		}
 	}
 	public void delete() {
@@ -156,32 +170,38 @@ public class UserViewController {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK){
-			try {
-				File userData = new File("data\\users\\" + user.getUsername() + ".txt");
-				BufferedReader reader = new BufferedReader(new FileReader(userData));
-				String line = reader.readLine();
-				String userDataContent = "";
-		        while (line != null) {
-		        	if(line.length() > 5 && (line).equals("ALBUM:" + albumToDelete)) {
-		        		line = reader.readLine();
-		        		while(line != null && (line.length() < 6 || !line.substring(0,6).equals("ALBUM:"))) {
-		        			line = reader.readLine();
-		        		}
-		        	}
-		        	userDataContent = userDataContent + line + System.lineSeparator();
-		            line = reader.readLine();
-		        }
-		        String newContent = userDataContent.replaceAll("null", "");
-		        FileWriter writer = new FileWriter(userData);
-		        writer.write(newContent);
-				reader.close();
-				writer.close();
-				}catch (IOException error) {
-				    System.err.println(String.format("Error: %s", error.getMessage()));
-				}
+			//this section isn't working 
 				albums.getItems().remove(albumToDelete);
 				user.deleteAlbum(albumToDelete);
 				albums.getSelectionModel().clearSelection();
+				
+				
+				
+				
+				
+				//stuff to make persisnent changes
+				for(int i = 0; i < LoginController.user_list.size();i++) {
+					if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())){
+						LoginController.user_list.get(i).deleteAlbum(albumToDelete);
+						System.out.println("album list size"+LoginController.user_list.get(i).getAlbumData().size());
+						for(int j = 0; j<LoginController.user_list.get(i).getAlbumData().size();j++ ) {
+							if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumToDelete)) {
+								LoginController.user_list.get(i).getAlbumData().remove(j);
+								System.out.println("after delete"+LoginController.user_list.get(i).getAlbumData().size());
+							}
+						}
+					}
+				}
+				try {
+					ArrayList<User> users = LoginController.user_list;
+						for(User i: users) {
+						ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data\\users\\"+i.getUsername()+".txt"));
+						oos.writeObject(i);
+						oos.close();
+			    	}
+					}catch(Exception ero) {
+						System.out.println(ero);
+					}
 			
 		}
 		
@@ -200,7 +220,6 @@ public class UserViewController {
 		controller.start(primaryStage, user);
 		Scene scene = new Scene(root, 800, 550);
 		primaryStage.setScene(scene);
-		//ComboBox combo = new ComboBox;
 		primaryStage.show();
 		}catch(IOException error) {
 		      System.out.println(error);
@@ -220,7 +239,6 @@ public class UserViewController {
 		controller.start(primaryStage, user);
 		Scene scene = new Scene(root, 800, 550);
 		primaryStage.setScene(scene);
-		//ComboBox combo = new ComboBox;
 		primaryStage.show();
 		}catch(IOException error) {
 		      System.out.println(error);
@@ -241,7 +259,6 @@ public class UserViewController {
 		controller.start(primaryStage);
 		Scene scene = new Scene(root, 800, 550);
 		primaryStage.setScene(scene);
-		//ComboBox combo = new ComboBox;
 		primaryStage.show();
 		}catch(IOException error) {
 		      System.out.println(error);

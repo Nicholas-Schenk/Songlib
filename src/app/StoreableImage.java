@@ -10,16 +10,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import app.Tag;
 
-public class CustomImage implements java.io.Serializable{
+public class StoreableImage implements java.io.Serializable{
 
     //private ImageView image;
     private String caption;
     private ArrayList<Tag> tag_list;
     private Calendar date;
     private String path;
-    private ImageView image;
-    public CustomImage(ImageView img, String caption, String imgpath) { //ImageView img
-        this.image = img;
+    public StoreableImage(String caption, String imgpath) { //ImageView img
+        //this.image = img;
         this.caption = caption;
         this.tag_list = new ArrayList<Tag>();
         this.path = imgpath;
@@ -31,14 +30,6 @@ public class CustomImage implements java.io.Serializable{
     public String getPath() {
         return path;
     }  
-
-    public void setImage(ImageView value) {
-        image = value;
-    }
-
-    public ImageView getImage() {
-        return image;
-    }
     public void setCaption(String value) {
         caption = value;
     }
