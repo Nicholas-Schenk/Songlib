@@ -1,2 +1,3 @@
 admin
 stock
+nick

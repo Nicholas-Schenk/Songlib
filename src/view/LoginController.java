@@ -57,7 +57,6 @@ public class LoginController {
 	
 	public void start(Stage mainStage) {
 		try {
-			
 
 			user_list = new ArrayList<User>();
 			File file = new File("src/app/users.txt");  //stores users so that they persist  

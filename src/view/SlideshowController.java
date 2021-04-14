@@ -45,6 +45,7 @@ public class SlideshowController {
 	@FXML private Button back;
 	
 	CustomImage selected_photo = PhotosController.selected_photo;
+
 	User this_user;
 	String albumName;
 	StoreableImage temp_store = new StoreableImage(null, null);
@@ -97,6 +98,7 @@ public class SlideshowController {
 		//}
 		if(index > 0) {
 			selected_photo = PhotosController.imgList.get(index-1);
+
 			for(int i = 0; i < LoginController.user_list.size();i++) {
 				if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {
 					for(int j = 0; j < LoginController.user_list.get(i).getAlbumData().size();j++) {
@@ -148,6 +150,7 @@ public class SlideshowController {
 		}*/
 		if(index < PhotosController.imgList.size()-1) {
 			selected_photo = PhotosController.imgList.get(index+1);
+
 			
 			for(int i = 0; i < LoginController.user_list.size();i++) {
 				if(LoginController.user_list.get(i).getUsername().equals(this_user.getUsername())) {

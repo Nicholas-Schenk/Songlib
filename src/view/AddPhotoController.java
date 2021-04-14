@@ -70,11 +70,27 @@ public class AddPhotoController {
 	    if (file != null) {
 	    	System.out.println("HELLO");   
 			try {
-				new_Image = new Image((file.toURI()).toURL().toString());
+				String file_path = new String();
+				if(this_user.getUsername().equals("stock")) {
+					file_path =(file.toURI()).toURL().toString();
+					if(file_path.length() > 39 ) {
+						if(file_path.substring(0, 40).equals("file:/C:/Users/Nick/photo65/Photos65/src")) {
+							System.out.println("YESS");
+							file_path = file_path.substring(40);
+							
+						}
+					}
+				}
+				if(file_path != null) {
+					new_Image = new Image(file_path);
+				}else {
+					file_path = (file.toURI()).toURL().toString();
+					new_Image = new Image((file.toURI()).toURL().toString());
+				}
 				ImageView new_ImageView = new ImageView(new_Image);
 			    new_ImageView.setFitHeight(50);
 			    new_ImageView.setFitWidth(50);
-			    new_CustomImage = new CustomImage(new_ImageView, null, (file.toURI()).toURL().toString());
+			    new_CustomImage = new CustomImage(new_ImageView, null, file_path);
 			    photo.setImage(new_Image);
 			    double ratio = new_Image.getHeight()/photo.getFitHeight();
 			    double actual_width = new_Image.getWidth() / ratio;
@@ -89,6 +105,7 @@ public class AddPhotoController {
 			    cal.setTimeInMillis(date);
 			    cal.set(Calendar.MILLISECOND,0);
 			    new_CustomImage.setDate(cal);
+
 			} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -99,7 +116,7 @@ public class AddPhotoController {
 		if(new_CustomImage == null) {
 			return;
 		}else {
-			System.out.println(caption_text.getText());
+			System.out.println("YO, path is: "+new_CustomImage.getPath());
 			new_CustomImage.setCaption(caption_text.getText());
 		    PhotosController.imgList.add(new_CustomImage);
 
@@ -118,6 +135,7 @@ public class AddPhotoController {
 		    			if(LoginController.user_list.get(i).getAlbumData().get(j).getName().equals(albumName)) {
 		    				if(LoginController.user_list.get(i).getAlbumData().get(j).getImageList() == null) {
 		    					ArrayList<StoreableImage> new_image_list_temp = new ArrayList<StoreableImage>();
+
 		    					new_image_list_temp.add(temp_store);
 		    					LoginController.user_list.get(i).getAlbumData().get(j).setImageList(new_image_list_temp);
 		    				}else {
@@ -200,6 +218,7 @@ public class AddPhotoController {
 		    						System.out.println(k);
 		    						CustomImage cimage = PhotosController.imgList.get(k);
 		    						StoreableImage simage = new StoreableImage(cimage.getCaption(), cimage.getPath()); 
+
 		    						simage.setTagList(cimage.getTagList());
 		    						simage.setDate(cimage.getDate());
 		    						LoginController.user_list.get(i).getAlbumData().get(j).getImageList().add(simage);
@@ -272,6 +291,7 @@ public class AddPhotoController {
 			}
 		}
 	}
+
 	public void back(ActionEvent e) {
 		Node node = (Node) e.getSource();
 		Stage primaryStage = (Stage) node.getScene().getWindow();

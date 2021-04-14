@@ -37,12 +37,15 @@ import java.util.Calendar;
 
 public class DisplayPhotoController {
 	
+	private User user;
+	private String albumname;
 
 	@FXML private ImageView photo;
 	@FXML private TextArea caption_text;
 	@FXML private Text photo_preview_text;
 	@FXML private TextArea photos_tags_text;
 	@FXML private Button back;
+
 	User this_user;
 	String albumName;
 	public void start(Stage mainStage, User user, String albumname) {
@@ -95,6 +98,7 @@ public class DisplayPhotoController {
 			AnchorPane root = (AnchorPane)loader.load();
 			PhotosController photosController = 
 					loader.getController();
+
 			photosController.start(primaryStage, this_user, albumName);
 			Scene scene = new Scene(root, 800, 550);
 			primaryStage.setScene(scene);
